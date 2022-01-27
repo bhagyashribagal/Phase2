@@ -48,19 +48,13 @@ public class ProductDetails extends HttpServlet {
                         
                         
                         DBConnection conn = new DBConnection(props.getProperty("url"), props.getProperty("userid"), props.getProperty("password"));
-                        Statement stmt = conn.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                        stmt.executeUpdate("insert into eproduct (name, price, date_added) values ('New Product', 17800.00, now())");
-                        out.println("Executed an insert operation<br>");
+                        CallableStatement stmt = conn.getConnection().prepareCall("{call add_product(?, ?)}");
+                        stmt.setString(1, "new product");
+                        stmt.setBigDecimal(2, new BigDecimal(1900.50));
+                        stmt.executeUpdate();
                         
-                        stmt.executeUpdate("update eproduct set price=2000 where name = 'New Product'");
-                        out.println("Executed an update operation<br>");
-                        
-                        stmt.executeUpdate("delete from eproduct where name = 'New Product'");
-                        out.println("Executed a delete operation<br>");
-                        
+                        out.println("Stored procedure has been executed.<Br>");
                         stmt.close();
-                        
-                        conn.closeConnection();
                         
                         
                         out.println("</body></html>");
