@@ -4,20 +4,24 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>JSP Directives</title>
+<title>Insert title here</title>
 </head>
 <body>
-This is content from the main file.
-<%@ include file="included.jsp" %>
+<body>
+<br>
+<jsp:useBean id="productBean" class="com.ecommerce.ProductBean" scope="session"></jsp:useBean>
+        <jsp:setProperty property="productId" name="productBean" value="18791"/>
+        <jsp:setProperty property="productName" name="productBean" value="Optical Wireless Mouse"/>
+        <jsp:setProperty property="price" name="productBean" value="600.00"/>
+
+<a href="showbean.jsp">Access bean properties from another page</a><br>
+<a href="forward.jsp">Use Forward action to go to Google</a><br>
+
 <hr>
-Example of using JSTL taglibs for formatting output<br>
-<p>
-        Currency = <fmt:formatNumber value = "145" type = "currency"/>
-<p>
-<p>
-        <c:set var = "now" value = "<%= new java.util.Date()%>" />
-        Current date and time is <fmt:formatDate pattern = "yyyy-MM-dd hh:mm:ss" value = "${now}" />
-</p>
+
+<jsp:text>
+        <![CDATA[This is my content.<br/>This will show within a text action tag exactly as it has been entered]]>
+</jsp:text>
 
 
 </body>
