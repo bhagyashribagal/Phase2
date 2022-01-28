@@ -1,3 +1,4 @@
+package com.ecommerce;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
