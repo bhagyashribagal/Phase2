@@ -1,4 +1,4 @@
 
-public enum HibernateUtil {
+public class HibernateUtil {
 
 }
