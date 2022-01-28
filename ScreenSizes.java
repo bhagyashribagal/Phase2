@@ -1,5 +1,3 @@
-package com.ecommerce;
-
 
 public class ScreenSizes {
         private long SCREENID;
@@ -20,4 +18,3 @@ public class ScreenSizes {
         
         
 }
-

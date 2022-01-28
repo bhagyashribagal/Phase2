@@ -1,3 +1,4 @@
+
 public class Finance {
         private long FINANCEID;
         private String name;
@@ -21,4 +22,3 @@ public class Finance {
         
         
 }
-
