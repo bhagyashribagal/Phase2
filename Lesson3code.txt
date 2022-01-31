@@ -1,0 +1,270 @@
+Source Code:
+AddPrompt.java
+package com.javaProgram.hibernate;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+/**
+* Servlet implementation class AddPrompt
+*/
+@WebServlet("/AddPrompt")
+public class AddPrompt extends HttpServlet {
+private static final long serialVersionUID = 1L;
+ 
+ /**
+ * @see HttpServlet#HttpServlet()
+ */
+ public AddPrompt() {
+ super();
+ // TODO Auto-generated constructor stub
+ }
+/**
+* @see HttpServlet#doGet(HttpServletRequest request, 
+HttpServletResponse response)
+*/
+protected void doGet(HttpServletRequest request, HttpServletResponse 
+response) throws ServletException, IOException {
+PrintWriter out = response.getWriter();
+ out.println("<html><body>");
+out.println("<center>Your product has been added to 
+database.</center></br>");
+out.println("<center><html><body></center></br>");
+out.println("<center><a href=\"index.html\">Back to Add 
+Products</a></center></br>");
+ out.println("</body></html>");
+}
+/**
+* @see HttpServlet#doPost(HttpServletRequest request, 
+HttpServletResponse response)
+*/
+protected void doPost(HttpServletRequest request, HttpServletResponse 
+response) throws ServletException, IOException {
+// TODO Auto-generated method stub
+doGet(request, response);
+}
+}
+Product.java:
+package com.javaProgram.hibernate;
+public class Product {
+private String ProductId;
+private String ProductName;
+private String ProductPrice;
+public Product(String id, String name, String price) {
+super();
+this.ProductId = id;
+this.ProductName = name;
+this.ProductPrice = price;
+}
+public String getid() {
+return ProductId;
+}
+public void setid(String id) {
+this.ProductId = id;
+}
+public String getname() {
+return ProductName;
+}
+public void setname(String name) {
+this.ProductName = name;
+}
+public String getprice() {
+return ProductPrice;
+}
+public void setprice(String price) {
+this.ProductPrice = price;
+}
+}
+ProductDAo.java:
+package com.javaProgram.hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import com.javaProgram.hibernate.Product;
+public class ProductDAo {
+public void addProduct(String id, String name, String price) {
+try {
+Configuration configuration = new Configuration();
+SessionFactory sessionFactory = 
+configuration.configure("hibernate.cfg.xml").buildSessionFactory();
+Session session = sessionFactory.openSession();
+Transaction transaction = session.beginTransaction();
+Product p = new Product(id, name, price);
+p.setid(id);
+p.setname(name);
+p.setprice(price);
+session.save(p);
+transaction.commit();
+session.close();
+} catch(HibernateException e) {
+System.out.println(e.getMessage());
+System.out.println("error");
+}
+}
+}
+HibernateUtil.java:
+package com.javaProgram.hibernate;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.metamodel.Metadata;
+import org.hibernate.metamodel.MetadataSources;
+import com.javaProgram.hibernate.Product;
+public class HibernateUtil {
+private static SessionFactory sessionFactory;
+public static void main(String[] args) {
+ try {
+ StandardServiceRegistry standardRegistry = new 
+StandardServiceRegistryBuilder()
+ 
+.configure("hibernate.cfg.xml").build();
+ Metadata metaData = new 
+MetadataSources(standardRegistry).getMetadataBuilder().build();
+ sessionFactory = 
+metaData.getSessionFactoryBuilder().build();
+ } catch (Throwable th) {
+ throw new ExceptionInInitializerError(th);
+ }
+ }
+ public static SessionFactory getSessionFactory() {
+ return sessionFactory;
+ }
+}
+ProductSerlet.java
+package com.javaProgram.hibernate;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import com.javaProgram.hibernate.ProductDAo;
+/**
+* Servlet implementation class ProductServlet
+*/
+@WebServlet("/ProductServlet")
+public class ProductServlet extends HttpServlet {
+private static final long serialVersionUID = 1L;
+ 
+ /**
+ * @see HttpServlet#HttpServlet()
+ */
+ public ProductServlet() {
+ super();
+ // TODO Auto-generated constructor stub
+ }
+/**
+* @see HttpServlet#doGet(HttpServletRequest request, 
+HttpServletResponse response)
+*/
+protected void doGet(HttpServletRequest request, HttpServletResponse 
+response) throws ServletException, IOException {
+ PrintWriter out = response.getWriter();
+ out.println("<html><body>");
+ out.println("<b>Adding Product</b> " + request.getParameter("name") 
++ "<br>");
+ out.println("<a href='index.html'>Return to Main</a><br>");
+ out.println("</body></html>");
+ 
+ String id = request.getParameter("id");
+String name = request.getParameter("name");
+String price = request.getParameter("price");
+HttpSession session = request.getSession(true);
+try {
+ProductDAo ProductDAO = new ProductDAo();
+ProductDAO.addProduct(id,name, price);
+response.sendRedirect("Success");
+} catch(Exception e) {
+System.err.println("doGet");
+e.printStackTrace();
+}
+}
+/**
+* @see HttpServlet#doPost(HttpServletRequest request, 
+HttpServletResponse response)
+*/
+protected void doPost(HttpServletRequest request, HttpServletResponse 
+response) throws ServletException, IOException {
+// TODO Auto-generated method stub
+doGet(request, response);
+}
+}
+addproduct.jsp:
+<!-- A jsp to insert record through hibernate --> 
+<%@ page
+import="com.javaProgram.hibernate.*,org.hibernate.*,org.hibernate.cfg.
+*" %> 
+<%! 
+int id;int price;String name; Session session1 = null; 
+%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+ pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Add Product</title>
+</head>
+<body>
+<form action="ProductServlet" method="get" >
+<label for="id">id:</label><br> <input type="text" id="id"
+name="id"><br>
+<label for="name">Name:</label><br> <input type="text"
+id="name"
+name="name"><br>
+<label for="price">Price:</label><br> <input type="number"
+id="price"
+name="price"><br>
+<br> <input type="submit" value="Submit"
+onclick="addproduct_onclick()">
+</form>
+<p style="text-align: center">
+<a href="index.html">Back to Home Page</a>
+</p>
+ 
+</body>
+</html>
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Welcome to eCommerce Website</h2>
+<h2>Add Product</h2>
+<a href="AddPrompt">List Products</a> <br>
+<a href="./addproduct.jsp">Add New Product</a><br>
+</body>
+</html>
+product.hbm.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd PUBLIC 
+//Hibernate/Hibernate Configuration DTD 3.0//EN">
+<!-- Generated Nov 12, 2016 12:24:29 PM by Hibernate Tools 3.4.0.CR1 -->
+-<hibernate-mapping>
+-<class table="Product" name="product">
+-<id name="product_id" type="int">
+<column name="ProductId"/>
+<generator class="assigned"/>
+</id>
+-<property name="product_name" type="java.lang.String">
+<column name="ProductName"/>
+</property>
+-<property name="product_price" type="int">
+<column name="ProductPrice"/>
+</property>
+</class>
+</hibernate-mapping>
